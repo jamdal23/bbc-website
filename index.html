@@ -194,6 +194,18 @@
     .focus-card { width: min(820px, calc(100% - 40px)); text-align: center; background: var(--paper-soft); border: 1px solid var(--line); padding: clamp(2.2rem, 7vw, 5rem); box-shadow: var(--shadow); }
     .focus-card h1 { font-size: clamp(2rem, 5vw, 3.6rem); }
     .focus-card p { max-width: 620px; margin: 1.15rem auto 0; color: var(--ink-soft); }
+    .live-video-wrap {
+      position: relative; width: 100%; aspect-ratio: 16 / 9; margin: 2rem 0 0;
+      background: #000; overflow: hidden;
+    }
+    .live-video-wrap.is-checking {
+      position: fixed; left: -10000px; top: 0; width: 800px; max-width: 100%;
+      margin: 0; opacity: 0; pointer-events: none;
+    }
+    .live-video-wrap[hidden] { display: none; }
+    .live-video-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .live-fallback { font-weight: 700; color: var(--ink) !important; }
+    .livestream-catchup { margin-bottom: 0 !important; }
     .button-row { margin-top: 2rem; display: flex; flex-wrap: wrap; gap: .8rem; justify-content: center; }
     .button {
       display: inline-flex; align-items: center; justify-content: center; gap: .55rem; min-height: 52px;
@@ -575,12 +587,16 @@
         <div class="focus-card">
           <div class="section-label">Join us online</div>
           <h1>Livestream starts every Sunday at 10:30 AM Central Time</h1>
+          <div class="live-video-wrap is-checking" id="live-video-wrap" aria-hidden="true">
+            <iframe id="bbc-live-player" title="Brownsboro Baptist Church live stream" src="https://www.youtube.com/embed/live_stream?channel=UCle5Xd-p8NEmT6CEum9wYkA&amp;enablejsapi=1&amp;autoplay=1&amp;mute=1&amp;playsinline=1&amp;rel=0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="eager"></iframe>
+          </div>
+          <p class="live-fallback" id="live-fallback" role="status">We’re not live right now.</p>
           <div class="button-row">
             <a class="button" href="https://www.youtube.com/@brownsborobaptistchurch" target="_blank" rel="noopener noreferrer">Watch on YouTube
               <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M21.6 7.2a2.6 2.6 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4a2.6 2.6 0 0 0-1.8 1.8A27 27 0 0 0 2 12a27 27 0 0 0 .4 4.8 2.6 2.6 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.6 2.6 0 0 0 1.8-1.8A27 27 0 0 0 22 12a27 27 0 0 0-.4-4.8ZM10 15.2V8.8l5.5 3.2-5.5 3.2Z"/></svg>
             </a>
           </div>
-          <p>If no live video is showing right now, catch up on recent services on our <button class="text-link nav-link-inline" type="button" data-route="services">Previous Services page</button>.</p>
+          <p class="livestream-catchup">Catch up on recent services on our <button class="text-link nav-link-inline" type="button" data-route="services">Previous Services page</button>.</p>
         </div>
       </div>
     </section>
@@ -692,6 +708,68 @@
       };
       var menuButton = document.querySelector(".menu-button");
       var nav = document.getElementById("primary-nav");
+      var liveWrap = document.getElementById("live-video-wrap");
+      var liveFallback = document.getElementById("live-fallback");
+      var livePlayer = null;
+      var liveIsVisible = false;
+      var liveWatchdog = null;
+
+      function showLiveFallback() {
+        if (liveWatchdog) window.clearTimeout(liveWatchdog);
+        liveWrap.hidden = true;
+        liveWrap.classList.add("is-checking");
+        liveWrap.setAttribute("aria-hidden", "true");
+        liveFallback.hidden = false;
+        liveIsVisible = false;
+      }
+
+      function showLivePlayer() {
+        if (liveWatchdog) window.clearTimeout(liveWatchdog);
+        liveWrap.hidden = false;
+        liveWrap.classList.remove("is-checking");
+        liveWrap.setAttribute("aria-hidden", "false");
+        liveFallback.hidden = true;
+        liveIsVisible = true;
+      }
+
+      function startLivePlayer() {
+        if (livePlayer || !window.YT || !window.YT.Player) return;
+        try {
+          livePlayer = new window.YT.Player("bbc-live-player", {
+            events: {
+              onReady: function (event) {
+                try {
+                  event.target.mute();
+                  event.target.playVideo();
+                } catch (error) {
+                  showLiveFallback();
+                  return;
+                }
+                liveWatchdog = window.setTimeout(function () {
+                  if (!liveIsVisible) showLiveFallback();
+                }, 8000);
+              },
+              onStateChange: function (event) {
+                if (event.data === window.YT.PlayerState.PLAYING) showLivePlayer();
+                else if (liveIsVisible && event.data === window.YT.PlayerState.ENDED) showLiveFallback();
+              },
+              onError: showLiveFallback,
+              onAutoplayBlocked: showLiveFallback
+            }
+          });
+        } catch (error) {
+          showLiveFallback();
+        }
+      }
+
+      window.onYouTubeIframeAPIReady = startLivePlayer;
+      liveWatchdog = window.setTimeout(showLiveFallback, 12000);
+      var youtubeApi = document.createElement("script");
+      youtubeApi.src = "https://www.youtube.com/iframe_api";
+      youtubeApi.async = true;
+      youtubeApi.onerror = showLiveFallback;
+      document.head.appendChild(youtubeApi);
+      if (window.YT && window.YT.Player) startLivePlayer();
 
       function currentRoute() {
         var route = window.location.hash.replace(/^#\/?/, "");
