@@ -242,6 +242,11 @@
     .footer-social a { display: inline-flex; color: var(--gold-bright); }
     .footer-social svg { width: 20px; height: 20px; }
     .copyright { margin-top: 3rem; padding-top: 1.4rem; border-top: 1px solid rgba(255,255,255,.18); color: #b7c2c9; font-size: .86rem; }
+    .announce-bar { background: var(--navy); color: #fffdf8; text-align: center; padding: .65rem 1rem; font-size: .95rem; line-height: 1.45; }
+    .announce-bar[hidden] { display: none; }
+    .announce-line + .announce-line { margin-top: .35rem; padding-top: .35rem; border-top: 1px solid rgba(255,255,255,.18); }
+    .announce-bar a { color: var(--gold-bright); font-weight: 700; text-underline-offset: 3px; }
+    .sermon-archive { text-align: center; margin: 1.5rem 0 0; }
     @media (max-width: 1060px) {
       .header-inner { justify-content: flex-end; min-height: 68px; }
       .menu-button { display: inline-flex; }
@@ -285,6 +290,7 @@
       <nav id="primary-nav" aria-label="Primary navigation">
         <ul class="nav-list">
           <li><button class="nav-link" data-route="home">Home</button></li>
+          <li><button class="nav-link" data-route="visit">Plan Your Visit</button></li>
           <li><button class="nav-link" data-route="pastor">A Message From the Pastor</button></li>
           <li><button class="nav-link" data-route="involved">Get Involved</button></li>
           <li><button class="nav-link" data-route="faith">Statement of Faith</button></li>
@@ -295,6 +301,8 @@
       </nav>
     </div>
   </header>
+
+  <div class="announce-bar" id="announce-bar" role="region" aria-label="Announcements" hidden></div>
 
   <main id="content">
     <section class="page" id="page-home" data-page="home">
@@ -357,6 +365,72 @@
           <h2>The good news of Jesus Christ.</h2>
           <p>The gospel is the good news that God, in His love, sent Jesus Christ to save sinners. Jesus lived without sin, died on the cross, and rose again. Salvation is received by grace through faith in Him.</p>
           <p class="welcome-close">We welcome you to visit us!</p>
+        </div>
+      </section>
+
+      <section class="section alt">
+        <div class="narrow">
+          <div class="section-heading center">
+            <div class="section-label">Watch</div>
+            <h2>Latest Sermon</h2>
+          </div>
+          <div class="live-video-wrap">
+            <iframe title="Latest sermon from Brownsboro Baptist Church" src="https://www.youtube.com/embed?listType=playlist&amp;list=PLGiw6_AL0vAYug37Yq8WPCGVb9q8QbytY" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+          </div>
+          <p class="sermon-archive"><a class="text-link" href="https://tracker.brownsborobaptistchurch.org/" target="_blank" rel="noopener noreferrer">Browse all sermons</a></p>
+        </div>
+      </section>
+    </section>
+
+    <section class="page" id="page-visit" data-page="visit">
+      <div class="page-hero shell">
+        <div class="label">We're glad you're coming</div>
+        <h1>Plan Your Visit</h1>
+        <p class="lead">Here is everything you need to know before your first visit to Brownsboro Baptist Church.</p>
+      </div>
+      <div class="shell section" style="padding-top:1rem">
+        <div class="cards-grid">
+          <article class="ministry-card">
+            <span class="card-mark">SERVICE TIMES</span>
+            <h2>When We Meet</h2>
+            <p><strong>Sundays</strong> — Small Groups at 9:30 AM, followed by Worship at 10:30 AM.<br><strong>Wednesdays</strong> — Bible Study at 6:30 PM.</p>
+          </article>
+          <article class="ministry-card">
+            <span class="card-mark">WORSHIP</span>
+            <h2>What to Expect</h2>
+            <p>Our worship services are designed to help you connect with God in a meaningful way. We enjoy a blended style of music, singing both timeless congregational hymns and powerful, modern worship songs. After a time of worship through music and giving, our Pastor shares a relevant message directly from the Word of God.</p>
+          </article>
+          <article class="ministry-card">
+            <span class="card-mark">COME AS YOU ARE</span>
+            <h2>What to Wear</h2>
+            <p>Please wear whatever makes you feel comfortable! You’ll see a wide range of dress, from jeans and t-shirts to suits and dresses. We’re much more concerned with meeting you than with what you wear.</p>
+          </article>
+          <article class="ministry-card">
+            <span class="card-mark">FOR FAMILIES</span>
+            <h2>Kids &amp; Students</h2>
+            <p>Sunday Small Groups include classes for all ages — children, students, and nursery-age children. On Wednesday evenings at 6:30 PM, middle and high school students gather for Student Group in the gym.</p>
+          </article>
+        </div>
+      </div>
+      <section class="section alt">
+        <div class="narrow" style="text-align:center">
+          <div class="section-label">Find Us</div>
+          <h2>Brownsboro Baptist Church</h2>
+          <p style="font-size:1.15rem">4315 U.S. 72, Brownsboro, AL</p>
+          <div class="button-row">
+            <a class="button" href="https://www.google.com/maps/search/?api=1&amp;query=Brownsboro+Baptist+Church%2C+4315+U.S.+72%2C+Brownsboro%2C+AL" target="_blank" rel="noopener noreferrer">Get Directions
+              <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg>
+            </a>
+          </div>
+        </div>
+      </section>
+      <section class="section">
+        <div class="narrow" style="text-align:center">
+          <h2>We would love to meet you.</h2>
+          <p>Whether this is your first time in church or you are looking for a church home, you are welcome here. Come worship with us this Sunday — and before you come, hear a word of welcome from our pastor.</p>
+          <div class="button-row">
+            <button class="button secondary" type="button" data-route="pastor">Read a Message From the Pastor</button>
+          </div>
         </div>
       </section>
     </section>
@@ -457,8 +531,13 @@
             <summary>IV. Salvation</summary>
             <div class="faith-body">
               <p>Salvation involves the redemption of the whole man, and is offered freely to all who accept Jesus Christ as Lord and Savior, who by His own blood obtained eternal redemption for the believer. In its broadest sense salvation includes regeneration, sanctification, and glorification.</p>
-              <p>Regeneration, or the new birth, is a work of God's grace in Christ Jesus. It is a change of heart wrought by the Holy Spirit through conviction of sin, to which the sinner responds in repentance toward God and faith in the Lord Jesus Christ. Repentance and faith are inseparable experiences of grace. Repentance is a genuine turning from sin toward God. Faith is the acceptance of Jesus Christ and commitment of the entire personality to him as Lord and Savior. Justification is God's gracious and full acquittal upon principles of His righteousness of all sinners who repent and believe in Christ. Justification brings the believer into a relationship of peace and favor with God.</p>
+              <h3>A. Regeneration</h3>
+              <p>Regeneration, or the new birth, is a work of God's grace in Christ Jesus. It is a change of heart wrought by the Holy Spirit through conviction of sin, to which the sinner responds in repentance toward God and faith in the Lord Jesus Christ. Repentance and faith are inseparable experiences of grace. Repentance is a genuine turning from sin toward God. Faith is the acceptance of Jesus Christ and commitment of the entire personality to him as Lord and Savior.</p>
+              <h3>B. Justification</h3>
+              <p>Justification is God's gracious and full acquittal upon principles of His righteousness of all sinners who repent and believe in Christ. Justification brings the believer into a relationship of peace and favor with God.</p>
+              <h3>C. Sanctification</h3>
               <p>Sanctification is the experience, beginning in regeneration, by which the believer is set apart to God's purposes, and is enabled to progress toward moral and spiritual perfection through the presence and power of the Holy Spirit dwelling in him. Growth in grace should continue throughout the regenerate person's life.</p>
+              <h3>D. Glorification</h3>
               <p>Glorification is the culmination of salvation and is the final blessed and abiding state of the redeemed.</p>
               <details class="verse-details"><summary>Supporting Verses</summary><div class="verse-list"><p>Genesis 3:15; Exodus 3:14-17; 6:2-8; Matthew 1:21; 4:17; 16:21-26; 27:22 to 28:6; Luke 1:28-79; 2:28-32; John 1:11-14, 29; 3:3-21, 36; 5:24; 10:9; 28-29; 15:1-16; 17:17; Acts 2:21; 4:12; 15:11; 16:30-31; 17:30-31; 20:32; Romans 1:16-18; 2:4; 3:23-25; 4:3ff; 5:8-10; 6:1-23; 8:1-18, 29-39; 10:9-10, 13; 13:11-14; 1 Corinthians 1:18, 30; 6:19-20; 15:10; 2 Corinthians 5:17-20; Galatians 2:20; 3:13; 5:22-25; 6:15; Ephesians 1:7; 2:8-22; 4:11-16; Philippians 2:12-13; Colossians 1:9-22; 3:1ff.</p></div></details>
             </div>
@@ -687,6 +766,7 @@
         </div>
         <div class="footer-links" aria-label="Footer navigation">
           <button class="footer-link" data-route="home">Home</button>
+          <button class="footer-link" data-route="visit">Plan Your Visit</button>
           <button class="footer-link" data-route="pastor">A Message From the Pastor</button>
           <button class="footer-link" data-route="involved">Get Involved</button>
           <button class="footer-link" data-route="faith">Statement of Faith</button>
@@ -701,9 +781,9 @@
 
   <script>
     (function () {
-      var validRoutes = ["home", "pastor", "involved", "faith", "giving", "livestream", "services"];
+      var validRoutes = ["home", "visit", "pastor", "involved", "faith", "giving", "livestream", "services"];
       var labels = {
-        home: "Home", pastor: "A Message From the Pastor", involved: "Get Involved",
+        home: "Home", visit: "Plan Your Visit", pastor: "A Message From the Pastor", involved: "Get Involved",
         faith: "Statement of Faith", giving: "Online Giving", livestream: "Livestream", services: "Previous Services"
       };
       var menuButton = document.querySelector(".menu-button");
@@ -816,6 +896,100 @@
 
       window.addEventListener("hashchange", function () { showRoute(currentRoute(), false); });
       showRoute(currentRoute(), false);
+    }());
+  </script>
+  <script>
+    // Announcement bar: populated from the church's Google Sheet (gviz JSON feed).
+    // Any failure, empty feed, or no active rows leaves the page exactly as-is (no bar).
+    (function () {
+      var bar = document.getElementById("announce-bar");
+      if (!bar || !window.fetch) return;
+      var FEED_URL = "https://docs.google.com/spreadsheets/d/1Ghw5ngMaZlQ3Pfw4snWXDHRtINBQT3YNQHNkCdqKS6k/gviz/tq?tqx=out:json";
+
+      function pad(n) { return (n < 10 ? "0" : "") + n; }
+
+      function toISODate(value) {
+        if (value === null || value === undefined) return "";
+        var s = String(value).trim();
+        if (!s) return "";
+        var m = s.match(/^Date\((\d+),(\d+),(\d+)/);
+        if (m) return m[1] + "-" + pad(parseInt(m[2], 10) + 1) + "-" + pad(parseInt(m[3], 10));
+        m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+        if (m) return m[1] + "-" + pad(parseInt(m[2], 10)) + "-" + pad(parseInt(m[3], 10));
+        return "";
+      }
+
+      function cellText(row, idx) {
+        if (!row || !row.c || !row.c[idx]) return "";
+        var c = row.c[idx];
+        if (c.v !== null && c.v !== undefined) return String(c.v);
+        return c.f ? String(c.f) : "";
+      }
+
+      function cellDate(row, idx) {
+        if (!row || !row.c || !row.c[idx]) return "";
+        var c = row.c[idx];
+        var iso = toISODate(c.v);
+        if (iso) return iso;
+        if (c.f) {
+          var m = String(c.f).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+          if (m) return m[3] + "-" + pad(parseInt(m[1], 10)) + "-" + pad(parseInt(m[2], 10));
+        }
+        return "";
+      }
+
+      fetch(FEED_URL)
+        .then(function (response) {
+          if (!response.ok) throw new Error("Announcement feed unavailable");
+          return response.text();
+        })
+        .then(function (text) {
+          var start = text.indexOf("{");
+          var end = text.lastIndexOf("}");
+          if (start < 0 || end <= start) return;
+          var data = JSON.parse(text.slice(start, end + 1));
+          if (!data || !data.table || !data.table.rows) return;
+
+          var now = new Date();
+          var today = now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-" + pad(now.getDate());
+          var active = [];
+          data.table.rows.forEach(function (row) {
+            var announcement = cellText(row, 0).trim();
+            if (!announcement) return;
+            if (/^announcement( text)?$/i.test(announcement)) return; // stray header row
+            var from = cellDate(row, 3);
+            var until = cellDate(row, 4);
+            if (from && today < from) return;
+            if (until && today > until) return;
+            active.push({
+              text: announcement,
+              linkText: cellText(row, 1).trim(),
+              linkUrl: cellText(row, 2).trim()
+            });
+          });
+
+          active.reverse(); // newest sheet row first
+          active = active.slice(0, 3);
+          if (!active.length) return;
+
+          active.forEach(function (item) {
+            var line = document.createElement("div");
+            line.className = "announce-line";
+            line.appendChild(document.createTextNode(item.text));
+            if (item.linkText && /^https?:\/\//i.test(item.linkUrl)) {
+              line.appendChild(document.createTextNode(" "));
+              var link = document.createElement("a");
+              link.href = item.linkUrl;
+              link.textContent = item.linkText;
+              link.target = "_blank";
+              link.rel = "noopener noreferrer";
+              line.appendChild(link);
+            }
+            bar.appendChild(line);
+          });
+          bar.hidden = false;
+        })
+        .catch(function () { /* No bar: the page stays exactly as it is. */ });
     }());
   </script>
 </body>
