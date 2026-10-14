@@ -224,10 +224,26 @@
     .footer-social a { display: inline-flex; color: var(--gold); }
     .footer-social svg { width: 20px; height: 20px; }
     .copyright { margin-top: 3rem; padding-top: 1.4rem; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: .86rem; }
-    .announce-bar { background: var(--band); color: var(--ink); text-align: center; padding: .65rem 1rem; font-size: .95rem; line-height: 1.45; }
+    .announce-bar {
+      background: var(--band); color: var(--ink); padding: .6rem 1rem;
+      font-size: .95rem; line-height: 1.45;
+      border-top: 2px solid var(--gold); border-bottom: 2px solid var(--gold);
+      display: flex; align-items: center; gap: 1rem;
+    }
     .announce-bar[hidden] { display: none; }
-    .announce-line + .announce-line { margin-top: .35rem; padding-top: .35rem; border-top: 1px solid var(--line); }
+    .announce-label {
+      flex: 0 0 auto; color: var(--gold); font-weight: 700; font-size: .74rem;
+      letter-spacing: .16em; text-transform: uppercase; white-space: nowrap;
+      border: 1px solid var(--gold); border-radius: 4px; padding: .28rem .55rem;
+      background: color-mix(in srgb, var(--gold) 10%, transparent);
+    }
+    .announce-lines { flex: 1 1 auto; min-width: 0; display: grid; text-align: center; }
+    .announce-line { grid-area: 1 / 1; font-weight: 500; opacity: 0; transition: opacity .6s ease; pointer-events: none; }
+    .announce-line.is-active { opacity: 1; pointer-events: auto; }
     .announce-bar a { color: var(--gold); font-weight: 700; text-underline-offset: 3px; }
+    @media (max-width: 640px) {
+      .announce-bar { flex-direction: column; gap: .45rem; padding: .65rem .9rem; }
+    }
     .sermon-archive { text-align: center; margin: 1.5rem 0 0; }
     .sermon-caption { text-align: center; margin: 1.25rem 0 0; font-family: "Libre Baskerville", Georgia, serif; font-size: 1.1rem; }
     @media (max-width: 1060px) {
@@ -285,7 +301,10 @@
     </div>
   </header>
 
-  <div class="announce-bar" id="announce-bar" role="region" aria-label="Announcements" hidden></div>
+  <div class="announce-bar" id="announce-bar" role="region" aria-label="Announcements" hidden>
+    <span class="announce-label" aria-hidden="true">Announcements</span>
+    <div class="announce-lines" id="announce-lines"></div>
+  </div>
 
   <main id="content">
     <section class="page" id="page-home" data-page="home">
@@ -956,7 +975,10 @@
           active = active.slice(0, 3);
           if (!active.length) return;
 
-          active.forEach(function (item) {
+          var linesBox = document.getElementById("announce-lines");
+          if (!linesBox) return;
+
+          function makeLine(item) {
             var line = document.createElement("div");
             line.className = "announce-line";
             line.appendChild(document.createTextNode(item.text));
@@ -969,8 +991,30 @@
               link.rel = "noopener noreferrer";
               line.appendChild(link);
             }
-            bar.appendChild(line);
-          });
+            return line;
+          }
+
+          var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+          if (active.length === 1 || reduceMotion) {
+            // Single announcement (or reduced motion): show the first one, statically.
+            var only = makeLine(active[0]);
+            only.classList.add("is-active");
+            linesBox.appendChild(only);
+          } else {
+            // Multiple announcements: show one at a time, crossfading every ~5 seconds.
+            var lines = active.map(makeLine);
+            lines.forEach(function (line, i) {
+              if (i === 0) line.classList.add("is-active");
+              linesBox.appendChild(line);
+            });
+            var current = 0;
+            setInterval(function () {
+              lines[current].classList.remove("is-active");
+              current = (current + 1) % lines.length;
+              lines[current].classList.add("is-active");
+            }, 5000);
+          }
           bar.hidden = false;
         })
         .catch(function () { /* No bar: the page stays exactly as it is. */ });
