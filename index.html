@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="color-scheme" content="light dark">
-  <meta name="theme-color" content="#102840">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#F1E3C2">
   <link rel="icon" href="data:,">
   <title>BBC Website Redesign Preview</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,35 +12,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      color-scheme: light dark;
-      --paper: #f6f1e7;
-      --paper-soft: #fbf8f1;
-      --ink: #102840;
-      --ink-soft: #3f5263;
-      --navy: #102840;
-      --navy-2: #1a3852;
-      --gold: #a6823a;
-      --gold-bright: #d6b667;
-      --line: #d9cfbd;
-      --white: #fffdf8;
-      --shadow: 0 18px 50px rgba(14, 32, 48, .12);
-      --focus: #d4a849;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --paper: #101a23;
-        --paper-soft: #17242f;
-        --ink: #f5eedf;
-        --ink-soft: #c9d0d4;
-        --navy: #09131c;
-        --navy-2: #132a3a;
-        --gold: #cfac62;
-        --gold-bright: #efd18a;
-        --line: #3a4a55;
-        --white: #f9f2e4;
-        --shadow: 0 18px 50px rgba(0,0,0,.34);
-        --focus: #f2c96b;
-      }
+      color-scheme: light;
+      --paper: #FAF5EA;
+      --surface: #FFFFFF;
+      --band: #F1E3C2;
+      --ink: #3B2D20;
+      --ink-soft: #8A7A5F;
+      --gold: #B8860B;
+      --line: #E7DCC3;
+      --divider: #EFE6CF;
+      --shadow: 0 18px 50px rgba(59, 45, 32, .12);
+      --focus: #B8860B;
     }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -59,13 +41,13 @@
     :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
     .skip-link {
       position: fixed; z-index: 100; left: 1rem; top: -5rem;
-      padding: .7rem 1rem; background: var(--white); color: var(--navy);
+      padding: .7rem 1rem; background: var(--surface); color: var(--ink);
       border-radius: 0 0 8px 8px; font-weight: 700;
     }
     .skip-link:focus { top: 0; }
     .site-header {
       position: sticky; top: 0; z-index: 50;
-      background: color-mix(in srgb, var(--paper-soft) 94%, transparent);
+      background: color-mix(in srgb, var(--band) 94%, transparent);
       border-bottom: 1px solid var(--line);
       backdrop-filter: blur(12px);
     }
@@ -89,7 +71,7 @@
     .nav-link:hover::after, .nav-link[aria-current="page"]::after { transform: scaleX(1); }
     .menu-button {
       display: none; width: 46px; height: 46px; border: 1px solid var(--line);
-      color: var(--ink); background: var(--paper-soft); cursor: pointer; border-radius: 6px;
+      color: var(--ink); background: var(--surface); cursor: pointer; border-radius: 6px;
       align-items: center; justify-content: center; margin-left: auto;
     }
     .menu-button svg { width: 24px; height: 24px; }
@@ -121,7 +103,7 @@
     }
     .hero::before {
       content: ""; position: absolute; inset: 0; z-index: -1;
-      background: linear-gradient(180deg, rgba(5,16,26,.24) 0%, rgba(5,16,26,.5) 48%, rgba(5,16,26,.9) 100%);
+      background: linear-gradient(180deg, rgba(43,32,20,.22) 0%, rgba(43,32,20,.48) 48%, rgba(43,32,20,.88) 100%);
     }
     .hero-content { width: min(1040px, calc(100% - 40px)); text-align: center; padding: 8rem 0 clamp(3rem, 7vw, 5.5rem); }
     .hero-kicker { color: #f0d28e; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; font-size: .78rem; }
@@ -129,23 +111,23 @@
     .hero-sub { margin: 0 auto; max-width: 660px; font-size: clamp(1.05rem, 2.4vw, 1.32rem); color: #f8f3e9; }
     .service-band {
       margin-top: 2rem; padding: 1.1rem 1.35rem; display: inline-flex; align-items: center; flex-wrap: wrap; justify-content: center; gap: .4rem .65rem;
-      background: rgba(10,26,40,.78); border: 1px solid rgba(240,210,142,.55); border-radius: 8px;
+      background: rgba(59,45,32,.82); border: 1px solid rgba(240,210,142,.55); border-radius: 8px;
       font-weight: 600; box-shadow: 0 12px 28px rgba(0,0,0,.2);
     }
     .service-band strong { color: #f0d28e; }
     .service-dot { opacity: .55; padding: 0 .15rem; }
     .section { padding: clamp(4.5rem, 9vw, 7.5rem) 0; }
-    .section.alt { background: var(--paper-soft); border-block: 1px solid var(--line); }
+    .section.alt { background: var(--band); border-block: 1px solid var(--line); }
     .section-heading { max-width: 700px; margin-bottom: 2.25rem; }
     .section-heading.center { text-align: center; margin-inline: auto; }
     .basics-grid, .cards-grid, .playlist-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
-    .basics-card { background: var(--paper-soft); padding: clamp(1.6rem, 3vw, 2.4rem); }
+    .basics-card { background: var(--surface); padding: clamp(1.6rem, 3vw, 2.4rem); }
     .basics-card .number { display: block; color: var(--gold); font: 700 .8rem/1 "Source Sans 3", sans-serif; letter-spacing: .1em; margin-bottom: 1.4rem; }
     .basics-card p { color: var(--ink-soft); margin: 0; }
     .story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(3rem, 8vw, 7rem); align-items: start; }
     .story-grid p { color: var(--ink-soft); }
     .mission-quote {
-      margin: 0; padding: 2rem 0; border-block: 1px solid var(--line);
+      margin: 0; padding: 2rem 0; border-block: 1px solid var(--divider);
       font: 400 clamp(1.35rem, 2.7vw, 2rem)/1.55 "Libre Baskerville", Georgia, serif;
     }
     .welcome-close { text-align: center; padding: 3rem 0 0; font-family: "Libre Baskerville", Georgia, serif; font-size: 1.3rem; color: var(--gold); }
@@ -158,19 +140,19 @@
     .letter p { margin-bottom: 1.25rem; }
     .signature { margin-top: 2rem; font-family: "Libre Baskerville", Georgia, serif; color: var(--gold); }
     .cards-grid { grid-template-columns: repeat(2, 1fr); }
-    .ministry-card { background: var(--paper-soft); padding: clamp(1.7rem, 3vw, 2.7rem); min-height: 250px; display: flex; flex-direction: column; }
+    .ministry-card { background: var(--surface); padding: clamp(1.7rem, 3vw, 2.7rem); min-height: 250px; display: flex; flex-direction: column; }
     .ministry-card .card-mark { color: var(--gold); font-size: .8rem; font-weight: 700; letter-spacing: .1em; margin-bottom: 2.4rem; }
     .ministry-card p { color: var(--ink-soft); }
     .text-link { color: var(--gold); font-weight: 700; text-decoration-thickness: 1px; text-underline-offset: 4px; margin-top: auto; align-self: flex-start; }
     .faith-wrap { padding-bottom: clamp(5rem, 10vw, 8rem); }
     .faith-note {
       display: flex; gap: 1rem; align-items: flex-start; margin: 0 0 2rem; padding: 1.1rem 1.25rem;
-      background: var(--paper-soft); border: 1px solid var(--line); color: var(--ink-soft);
+      background: var(--surface); border: 1px solid var(--line); color: var(--ink-soft);
     }
     .faith-note svg { flex: 0 0 22px; margin-top: .2rem; color: var(--gold); }
     .faith-note p { margin: 0; }
     .faith-list { border-top: 1px solid var(--line); }
-    details { border-bottom: 1px solid var(--line); }
+    details { border-bottom: 1px solid var(--divider); }
     summary {
       list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 1.2rem;
       padding: 1.35rem .2rem; font: 700 1.04rem/1.4 "Libre Baskerville", Georgia, serif;
@@ -191,7 +173,7 @@
     .verse-list p { margin: 0 0 .9rem; }
     .verse-list p:last-child { margin-bottom: 0; }
     .focus-panel { min-height: 52vh; display: grid; place-items: center; padding: clamp(4rem, 10vw, 8rem) 0; }
-    .focus-card { width: min(820px, calc(100% - 40px)); text-align: center; background: var(--paper-soft); border: 1px solid var(--line); padding: clamp(2.2rem, 7vw, 5rem); box-shadow: var(--shadow); }
+    .focus-card { width: min(820px, calc(100% - 40px)); text-align: center; background: var(--surface); border: 1px solid var(--line); padding: clamp(2.2rem, 7vw, 5rem); box-shadow: var(--shadow); }
     .focus-card h1 { font-size: clamp(2rem, 5vw, 3.6rem); }
     .focus-card p { max-width: 620px; margin: 1.15rem auto 0; color: var(--ink-soft); }
     .live-video-wrap {
@@ -209,49 +191,49 @@
     .button-row { margin-top: 2rem; display: flex; flex-wrap: wrap; gap: .8rem; justify-content: center; }
     .button {
       display: inline-flex; align-items: center; justify-content: center; gap: .55rem; min-height: 52px;
-      padding: .82rem 1.2rem; border: 1px solid var(--gold); background: var(--gold); color: #fffdf8;
+      padding: .82rem 1.2rem; border: 1px solid var(--gold); background: var(--gold); color: #FFFFFF;
       text-decoration: none; font-weight: 700; cursor: pointer; transition: background .18s ease, color .18s ease;
     }
-    .button:hover { background: var(--navy-2); border-color: var(--navy-2); }
+    .button:hover { background: var(--ink); border-color: var(--ink); }
     .button.secondary { background: transparent; color: var(--ink); border-color: var(--line); }
-    .button.secondary:hover { color: var(--white); background: var(--navy-2); border-color: var(--navy-2); }
+    .button.secondary:hover { color: var(--surface); background: var(--ink); border-color: var(--ink); }
     .button svg { width: 18px; height: 18px; }
     .tracker-callout {
       display: grid; grid-template-columns: 1.3fr auto; align-items: center; gap: 2rem; padding: clamp(1.6rem, 4vw, 2.6rem);
-      background: var(--navy); color: var(--white); margin-bottom: clamp(3rem, 7vw, 5rem);
+      background: var(--band); color: var(--ink); margin-bottom: clamp(3rem, 7vw, 5rem);
     }
     .tracker-callout h2 { font-size: clamp(1.5rem, 3vw, 2.2rem); margin-bottom: .55rem; }
-    .tracker-callout p { color: #dce4e8; margin: 0; }
+    .tracker-callout p { color: var(--ink-soft); margin: 0; }
     .playlist-grid { background: transparent; border: 0; gap: 1rem; }
-    .playlist-card { background: var(--paper-soft); border-top: 3px solid var(--gold); padding: 1.75rem; min-height: 210px; display: flex; flex-direction: column; }
+    .playlist-card { background: var(--surface); border-top: 3px solid var(--gold); padding: 1.75rem; min-height: 210px; display: flex; flex-direction: column; }
     .playlist-card p { color: var(--ink-soft); }
-    .social-band { margin-top: clamp(4rem, 8vw, 6rem); padding-top: 2.5rem; border-top: 1px solid var(--line); text-align: center; }
+    .social-band { margin-top: clamp(4rem, 8vw, 6rem); padding-top: 2.5rem; border-top: 1px solid var(--divider); text-align: center; }
     .social-links { display: flex; justify-content: center; gap: .8rem; margin-top: 1.3rem; }
     .icon-link { width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--line); color: var(--ink); }
-    .icon-link:hover { background: var(--navy); color: var(--white); }
+    .icon-link:hover { background: var(--ink); color: var(--surface); }
     .icon-link svg { width: 20px; height: 20px; }
-    .site-footer { background: var(--navy); color: #fffdf8; padding: 4rem 0 1.7rem; }
+    .site-footer { background: var(--band); color: var(--ink); padding: 4rem 0 1.7rem; }
     .footer-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 3rem; align-items: start; }
     .footer-name { font: 700 1.25rem/1.4 "Libre Baskerville", Georgia, serif; margin-bottom: .8rem; }
-    .footer-contact { color: #d5dee3; }
+    .footer-contact { color: var(--ink-soft); }
     .footer-contact a { text-decoration: none; }
     .footer-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem 2rem; justify-self: end; }
-    .footer-link { color: #dbe2e6; background: transparent; border: 0; padding: .1rem 0; text-align: left; font: 600 .92rem "Source Sans 3", sans-serif; cursor: pointer; }
-    .footer-link:hover { color: var(--gold-bright); }
+    .footer-link { color: var(--ink-soft); background: transparent; border: 0; padding: .1rem 0; text-align: left; font: 600 .92rem "Source Sans 3", sans-serif; cursor: pointer; }
+    .footer-link:hover { color: var(--gold); }
     .footer-social { display: flex; gap: .75rem; margin-top: 1.3rem; }
-    .footer-social a { display: inline-flex; color: var(--gold-bright); }
+    .footer-social a { display: inline-flex; color: var(--gold); }
     .footer-social svg { width: 20px; height: 20px; }
-    .copyright { margin-top: 3rem; padding-top: 1.4rem; border-top: 1px solid rgba(255,255,255,.18); color: #b7c2c9; font-size: .86rem; }
-    .announce-bar { background: var(--navy); color: #fffdf8; text-align: center; padding: .65rem 1rem; font-size: .95rem; line-height: 1.45; }
+    .copyright { margin-top: 3rem; padding-top: 1.4rem; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: .86rem; }
+    .announce-bar { background: var(--band); color: var(--ink); text-align: center; padding: .65rem 1rem; font-size: .95rem; line-height: 1.45; }
     .announce-bar[hidden] { display: none; }
-    .announce-line + .announce-line { margin-top: .35rem; padding-top: .35rem; border-top: 1px solid rgba(255,255,255,.18); }
-    .announce-bar a { color: var(--gold-bright); font-weight: 700; text-underline-offset: 3px; }
+    .announce-line + .announce-line { margin-top: .35rem; padding-top: .35rem; border-top: 1px solid var(--line); }
+    .announce-bar a { color: var(--gold); font-weight: 700; text-underline-offset: 3px; }
     .sermon-archive { text-align: center; margin: 1.5rem 0 0; }
     .sermon-caption { text-align: center; margin: 1.25rem 0 0; font-family: "Libre Baskerville", Georgia, serif; font-size: 1.1rem; }
     @media (max-width: 1060px) {
       .header-inner { justify-content: flex-end; min-height: 68px; }
       .menu-button { display: inline-flex; }
-      nav { position: absolute; left: 0; right: 0; top: 100%; background: var(--paper-soft); border-bottom: 1px solid var(--line); box-shadow: var(--shadow); display: none; }
+      nav { position: absolute; left: 0; right: 0; top: 100%; background: var(--band); border-bottom: 1px solid var(--line); box-shadow: var(--shadow); display: none; }
       nav.open { display: block; }
       .nav-list { display: block; padding: .7rem 20px 1rem; }
       .nav-link { width: 100%; text-align: left; padding: .82rem .4rem; white-space: normal; }
