@@ -317,28 +317,74 @@
       background: var(--gold); color: #FFFFFF; border-radius: 50%;
     }
     .cal-event {
-      background: var(--band); border-radius: 4px; padding: .28rem .4rem; margin-bottom: .3rem;
-      font-size: .74rem; line-height: 1.3; overflow-wrap: break-word;
+      display: block; width: 100%; text-align: left;
+      background: var(--band); border: 0; border-radius: 4px; padding: .28rem .4rem; margin-bottom: .3rem;
+      font-family: "Source Sans 3", sans-serif; font-size: .74rem; line-height: 1.3; overflow-wrap: break-word;
+      color: var(--ink); cursor: pointer; transition: background .15s ease, box-shadow .15s ease;
     }
+    .cal-event:hover { background: color-mix(in srgb, var(--gold) 20%, var(--band)); }
+    .cal-event:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; background: color-mix(in srgb, var(--gold) 20%, var(--band)); }
     .cal-event-title { font-weight: 700; display: block; }
     .cal-event-time { color: var(--ink-soft); font-weight: 600; }
     .cal-glance { margin-top: clamp(2.5rem, 6vw, 4rem); }
     .cal-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
     .cal-list-item {
-      display: grid; grid-template-columns: 150px 1fr; gap: .4rem 1.5rem;
-      padding: 1.05rem .2rem; border-bottom: 1px solid var(--divider);
+      border-bottom: 1px solid var(--divider);
     }
+    .cal-list-btn {
+      display: grid; grid-template-columns: 150px 1fr; gap: .4rem 1.5rem;
+      width: 100%; padding: 1.05rem .2rem; margin: 0;
+      background: transparent; border: 0; text-align: left;
+      font: inherit; color: inherit; cursor: pointer;
+      transition: background .15s ease;
+    }
+    .cal-list-btn:hover { background: color-mix(in srgb, var(--band) 55%, transparent); }
+    .cal-list-btn:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; background: color-mix(in srgb, var(--band) 55%, transparent); }
     .cal-list-date { font: 700 .95rem/1.45 "Libre Baskerville", Georgia, serif; color: var(--ink); }
     .cal-list-title { font-weight: 700; font-size: 1.05rem; }
     .cal-list-time { color: var(--gold); font-weight: 700; margin-left: .5rem; white-space: nowrap; }
     .cal-list-details { color: var(--ink-soft); margin-top: .15rem; }
     .cal-empty { color: var(--ink-soft); padding: 1.4rem .2rem; border-bottom: 1px solid var(--divider); margin: 0; }
+    .cal-modal-overlay {
+      position: fixed; inset: 0; z-index: 90;
+      background: rgba(59, 45, 32, .58);
+      display: flex; align-items: center; justify-content: center;
+      padding: 1rem;
+    }
+    .cal-modal-overlay[hidden] { display: none; }
+    .cal-modal {
+      position: relative; width: min(540px, 100%); max-height: calc(100vh - 2rem); overflow: auto;
+      background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow);
+      padding: clamp(1.6rem, 4vw, 2.4rem);
+    }
+    .cal-modal-close {
+      position: absolute; top: .65rem; right: .65rem; width: 42px; height: 42px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: transparent; border: 1px solid var(--line); border-radius: 4px;
+      color: var(--ink); font-size: 1.5rem; line-height: 1; cursor: pointer;
+    }
+    .cal-modal-close:hover { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+    .cal-modal-label {
+      margin: 0 0 .5rem; color: var(--gold); font-weight: 700; letter-spacing: .13em;
+      text-transform: uppercase; font-size: .74rem;
+    }
+    .cal-modal-title {
+      font-family: "Libre Baskerville", Georgia, serif; font-size: clamp(1.45rem, 4vw, 1.9rem);
+      line-height: 1.25; margin: 0 2.2rem 1rem 0;
+    }
+    .cal-modal-date { font-weight: 700; font-size: 1.05rem; margin: 0 0 1rem; }
+    .cal-modal-row { display: grid; grid-template-columns: 86px 1fr; gap: .35rem 1rem; padding: .85rem 0; border-top: 1px solid var(--divider); }
+    .cal-modal-row dt { font-weight: 700; color: var(--gold); font-size: .82rem; letter-spacing: .08em; text-transform: uppercase; padding-top: .15rem; }
+    .cal-modal-row dd { margin: 0; color: var(--ink); overflow-wrap: break-word; }
+    .cal-modal-rows { margin: 0; }
     @media (max-width: 640px) {
       .cal-day { min-height: 74px; padding: .3rem .3rem .4rem; }
       .cal-date-num { min-width: 1.35rem; height: 1.35rem; font-size: .8rem; margin-bottom: .2rem; }
       .cal-event { font-size: .62rem; padding: .2rem .28rem; }
       .cal-dow { font-size: .64rem; letter-spacing: .04em; padding: .45rem .1rem; }
       .cal-list-item { grid-template-columns: 1fr; gap: .15rem; }
+      .cal-list-btn { grid-template-columns: 1fr; gap: .15rem; }
+      .cal-modal-row { grid-template-columns: 1fr; gap: .15rem; }
       .cal-nav-btn { padding: .55rem .65rem; }
       .cal-nav-btn .cal-nav-label { display: none; }
     }
@@ -906,6 +952,25 @@
     </section>
   </main>
 
+  <div class="cal-modal-overlay" id="cal-event-modal" hidden>
+    <div class="cal-modal" role="dialog" aria-modal="true" aria-labelledby="cal-modal-title" aria-describedby="cal-modal-date">
+      <button class="cal-modal-close" id="cal-modal-close" type="button" aria-label="Close event details">&times;</button>
+      <p class="cal-modal-label">Event details</p>
+      <h3 class="cal-modal-title" id="cal-modal-title"></h3>
+      <p class="cal-modal-date" id="cal-modal-date"></p>
+      <dl class="cal-modal-rows">
+        <div class="cal-modal-row" id="cal-modal-time-row" hidden>
+          <dt>Time</dt>
+          <dd id="cal-modal-time"></dd>
+        </div>
+        <div class="cal-modal-row" id="cal-modal-details-row" hidden>
+          <dt>Details</dt>
+          <dd id="cal-modal-details"></dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
   <footer class="site-footer">
     <div class="shell">
       <div class="footer-grid">
@@ -1308,6 +1373,68 @@
       var viewYear = now.getFullYear();
       var viewMonth = now.getMonth(); // 0-based
 
+      var modalOverlay = document.getElementById("cal-event-modal");
+      var modalTitle = document.getElementById("cal-modal-title");
+      var modalDate = document.getElementById("cal-modal-date");
+      var modalTimeRow = document.getElementById("cal-modal-time-row");
+      var modalTime = document.getElementById("cal-modal-time");
+      var modalDetailsRow = document.getElementById("cal-modal-details-row");
+      var modalDetails = document.getElementById("cal-modal-details");
+      var modalClose = document.getElementById("cal-modal-close");
+      var lastTrigger = null;
+
+      function fullDateLabel(iso) {
+        var p = iso.split("-");
+        if (p.length !== 3) return iso;
+        var y = parseInt(p[0], 10), m = parseInt(p[1], 10) - 1, d = parseInt(p[2], 10);
+        var dt = new Date(y, m, d);
+        return DAY_NAMES[dt.getDay()] + ", " + MONTH_NAMES[m] + " " + d + ", " + y;
+      }
+
+      function openEventDetail(ev, iso, trigger) {
+        if (!modalOverlay) return;
+        lastTrigger = trigger || document.activeElement;
+        modalTitle.textContent = ev.title || "";
+        modalDate.textContent = fullDateLabel(iso);
+        if (ev.time) {
+          modalTime.textContent = ev.time;
+          modalTimeRow.hidden = false;
+        } else {
+          modalTime.textContent = "";
+          modalTimeRow.hidden = true;
+        }
+        if (ev.details) {
+          modalDetails.textContent = ev.details;
+          modalDetailsRow.hidden = false;
+        } else {
+          modalDetails.textContent = "";
+          modalDetailsRow.hidden = true;
+        }
+        modalOverlay.hidden = false;
+        document.body.style.overflow = "hidden";
+        if (modalClose) modalClose.focus();
+      }
+
+      function closeEventDetail() {
+        if (!modalOverlay || modalOverlay.hidden) return;
+        modalOverlay.hidden = true;
+        document.body.style.overflow = "";
+        if (lastTrigger && document.contains(lastTrigger)) {
+          try { lastTrigger.focus(); } catch (e) {}
+        }
+        lastTrigger = null;
+      }
+
+      if (modalOverlay) {
+        if (modalClose) modalClose.addEventListener("click", closeEventDetail);
+        modalOverlay.addEventListener("click", function (e) {
+          if (e.target === modalOverlay) closeEventDetail();
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && !modalOverlay.hidden) closeEventDetail();
+        });
+      }
+
       function render() {
         var monthLabel = MONTH_NAMES[viewMonth] + " " + viewYear;
         titleEl.textContent = monthLabel;
@@ -1336,8 +1463,14 @@
           num.textContent = d.getDate();
           cell.appendChild(num);
           (eventsByDate[iso] || []).forEach(function (ev) {
-            var pill = document.createElement("div");
+            var pill = document.createElement("button");
+            pill.type = "button";
             pill.className = "cal-event";
+            pill.setAttribute("aria-haspopup", "dialog");
+            pill.setAttribute("aria-label", ev.title + ", " + fullDateLabel(iso) + ". View details");
+            (function (evCopy, isoCopy) {
+              pill.addEventListener("click", function () { openEventDetail(evCopy, isoCopy, pill); });
+            })(ev, iso);
             var t = document.createElement("span");
             t.className = "cal-event-title";
             t.textContent = ev.title;
@@ -1378,6 +1511,14 @@
           var dateObj = new Date(viewYear, viewMonth, item.day);
           var li = document.createElement("li");
           li.className = "cal-list-item";
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "cal-list-btn";
+          btn.setAttribute("aria-haspopup", "dialog");
+          btn.setAttribute("aria-label", item.ev.title + ", " + fullDateLabel(item.iso) + ". View details");
+          (function (evCopy, isoCopy, btnCopy) {
+            btnCopy.addEventListener("click", function () { openEventDetail(evCopy, isoCopy, btnCopy); });
+          })(item.ev, item.iso, btn);
           var dateEl = document.createElement("div");
           dateEl.className = "cal-list-date";
           dateEl.textContent = DAY_NAMES[dateObj.getDay()] + ", " + MONTH_NAMES[viewMonth] + " " + item.day;
@@ -1398,8 +1539,9 @@
             det.textContent = item.ev.details;
             body.appendChild(det);
           }
-          li.appendChild(dateEl);
-          li.appendChild(body);
+          btn.appendChild(dateEl);
+          btn.appendChild(body);
+          li.appendChild(btn);
           ul.appendChild(li);
         });
         listEl.appendChild(ul);
