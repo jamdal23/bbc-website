@@ -1184,6 +1184,59 @@
         return "";
       }
 
+      // Standing display rules for announcement text, applied here so every
+      // entry follows them even if the sheet text leaves them out:
+      // Wednesday Night Meals note the $6 per person cost, and a 5th Sunday
+      // Singing is always billed with the dessert social that follows it.
+      function enrichAnnouncementText(text) {
+        var out = String(text || "");
+        if (/wednesday night meal/i.test(out) && !/\$\s*6/.test(out)) {
+          out = out.replace(/\s+$/, "") + " — $6 per person";
+        }
+        if (/(5th|fifth)\s+sunday singing/i.test(out) && !/dessert social/i.test(out)) {
+          out = out.replace(/\s+$/, "") + ", and dessert social to follow";
+        }
+        return out;
+      }
+
+      // Announcements run in event-date order, earliest first. The event date
+      // (and time, when given) is read from the announcement text itself, e.g.
+      // "Wednesday Night Meal — November 4 @ 5:30 PM". An announcement with no
+      // date in its text falls back to its show-until date, then show-from.
+      var MONTH_INDEX = {
+        january: 0, february: 1, march: 2, april: 3, may: 4, june: 5,
+        july: 6, august: 7, september: 8, october: 9, november: 10, december: 11
+      };
+      function announcementSortKey(text, fromISO, untilISO) {
+        var timeMin = 0;
+        var tm = String(text).match(/(\d{1,2})(?::(\d{2}))?\s*(AM|PM)\b/i);
+        if (tm) {
+          var h = parseInt(tm[1], 10) % 12;
+          if (/pm/i.test(tm[3])) h += 12;
+          timeMin = h * 60 + (tm[2] ? parseInt(tm[2], 10) : 0);
+        }
+        var m = String(text).match(/(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2})\b/i);
+        if (!m) {
+          var fb = untilISO || fromISO;
+          if (!fb) return Number.MAX_SAFE_INTEGER;
+          var fp = fb.split("-");
+          return new Date(parseInt(fp[0], 10), parseInt(fp[1], 10) - 1, parseInt(fp[2], 10)).getTime() + timeMin * 60000;
+        }
+        var month = MONTH_INDEX[m[1].toLowerCase()];
+        var day = parseInt(m[2], 10);
+        var yearRef = untilISO || fromISO;
+        var year = yearRef ? parseInt(yearRef.slice(0, 4), 10) : new Date().getFullYear();
+        var candidate = new Date(year, month, day);
+        if (untilISO) {
+          var up = untilISO.split("-");
+          var untilDate = new Date(parseInt(up[0], 10), parseInt(up[1], 10) - 1, parseInt(up[2], 10));
+          var DAY = 86400000;
+          if (candidate - untilDate > 7 * DAY) candidate = new Date(year - 1, month, day);
+          else if (untilDate - candidate > 60 * DAY) candidate = new Date(year + 1, month, day);
+        }
+        return candidate.getTime() + timeMin * 60000;
+      }
+
       fetch(FEED_URL)
         .then(function (response) {
           if (!response.ok) throw new Error("Announcement feed unavailable");
@@ -1199,7 +1252,7 @@
           var now = new Date();
           var today = now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-" + pad(now.getDate());
           var active = [];
-          data.table.rows.forEach(function (row) {
+          data.table.rows.forEach(function (row, idx) {
             var announcement = cellText(row, 0).trim();
             if (!announcement) return;
             if (/^announcement( text)?$/i.test(announcement)) return; // stray header row
@@ -1207,14 +1260,22 @@
             var until = cellDate(row, 4);
             if (from && today < from) return;
             if (until && today > until) return;
+            var text = enrichAnnouncementText(announcement);
             active.push({
-              text: announcement,
+              text: text,
               linkText: cellText(row, 1).trim(),
-              linkUrl: cellText(row, 2).trim()
+              linkUrl: cellText(row, 2).trim(),
+              sortKey: announcementSortKey(text, from, until),
+              sheetOrder: idx
             });
           });
 
-          active.reverse(); // newest sheet row first
+          // Date order: the earliest event sits on top of the expanded list,
+          // later dates below it; sheet order breaks exact ties.
+          active.sort(function (a, b) {
+            if (a.sortKey !== b.sortKey) return a.sortKey - b.sortKey;
+            return a.sheetOrder - b.sheetOrder;
+          });
           if (!active.length) return;
           var allActive = active;
           active = active.slice(0, 3); // the bar rotates through up to 3
@@ -1685,11 +1746,22 @@
             var title = cellText(row, 1).trim();
             if (!iso || !title) return; // skips the header row and blanks
             if (/^title$/i.test(title) && !cellText(row, 2).trim()) return;
+            var details = cellText(row, 3).trim();
+            // Standing display rules, applied here so every calendar entry
+            // follows them even if the sheet text leaves them out: Wednesday
+            // Night Meals note the $6 per person cost in their details, and a
+            // 5th Sunday Singing is billed with the dessert social to follow.
+            if (/wednesday night meal/i.test(title) && !/\$\s*6/.test(details) && !/\$\s*6/.test(title)) {
+              details = details ? details + " — $6 per person" : "$6 per person";
+            }
+            if (/(5th|fifth)\s+sunday singing/i.test(title) && !/dessert social/i.test(title)) {
+              title = title + " and dessert social to follow";
+            }
             if (!eventsByDate[iso]) eventsByDate[iso] = [];
             eventsByDate[iso].push({
               title: title,
               time: cellText(row, 2).trim(),
-              details: cellText(row, 3).trim()
+              details: details
             });
           });
           render();
