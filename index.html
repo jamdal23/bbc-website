@@ -376,7 +376,19 @@
     .cal-modal-row { display: grid; grid-template-columns: 86px 1fr; gap: .35rem 1rem; padding: .85rem 0; border-top: 1px solid var(--divider); }
     .cal-modal-row dt { font-weight: 700; color: var(--gold); font-size: .82rem; letter-spacing: .08em; text-transform: uppercase; padding-top: .15rem; }
     .cal-modal-row dd { margin: 0; color: var(--ink); overflow-wrap: break-word; }
+    .cal-modal-row dd a { color: var(--gold); font-weight: 700; text-underline-offset: 3px; overflow-wrap: anywhere; }
     .cal-modal-rows { margin: 0; }
+    .cal-modal-archive { margin-top: 1.1rem; padding-top: 1.1rem; border-top: 1px solid var(--divider); }
+    .cal-modal-archive[hidden] { display: none; }
+    .cal-archive-link {
+      display: inline-flex; align-items: center; gap: .55rem; min-height: 52px;
+      padding: .82rem 1.15rem; border: 1px solid var(--gold); background: var(--gold); color: #FFFFFF;
+      text-decoration: none; font-weight: 700; line-height: 1.35;
+    }
+    .cal-archive-link:hover { background: var(--ink); border-color: var(--ink); }
+    .cal-archive-link svg { width: 18px; height: 18px; flex: 0 0 18px; }
+    .cal-archive-note { color: var(--ink-soft); margin: .7rem 0 0; font-size: .96rem; }
+    .cal-list-archive-note { color: var(--gold); font-weight: 700; margin-top: .15rem; }
     @media (max-width: 640px) {
       .cal-day { min-height: 74px; padding: .3rem .3rem .4rem; }
       .cal-date-num { min-width: 1.35rem; height: 1.35rem; font-size: .8rem; margin-bottom: .2rem; }
@@ -968,6 +980,13 @@
           <dd id="cal-modal-details"></dd>
         </div>
       </dl>
+      <div class="cal-modal-archive" id="cal-modal-archive" hidden>
+        <a class="cal-archive-link" id="cal-modal-archive-link" href="https://tracker.brownsborobaptistchurch.org/?date=2026-10-25" target="_blank" rel="noopener noreferrer">
+          <span id="cal-modal-archive-link-text">View the full order of service in the archive</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg>
+        </a>
+        <p class="cal-archive-note">The full order for this date — every song and its YouTube video — is kept in the Order of Service Tracker.</p>
+      </div>
     </div>
   </div>
 
@@ -1380,6 +1399,9 @@
       var modalTime = document.getElementById("cal-modal-time");
       var modalDetailsRow = document.getElementById("cal-modal-details-row");
       var modalDetails = document.getElementById("cal-modal-details");
+      var modalArchive = document.getElementById("cal-modal-archive");
+      var modalArchiveLink = document.getElementById("cal-modal-archive-link");
+      var modalArchiveLinkText = document.getElementById("cal-modal-archive-link-text");
       var modalClose = document.getElementById("cal-modal-close");
       var lastTrigger = null;
 
@@ -1389,6 +1411,46 @@
         var y = parseInt(p[0], 10), m = parseInt(p[1], 10) - 1, d = parseInt(p[2], 10);
         var dt = new Date(y, m, d);
         return DAY_NAMES[dt.getDay()] + ", " + MONTH_NAMES[m] + " " + d + ", " + y;
+      }
+
+      // Order of Service entries do not duplicate the order in the calendar.
+      // The pop-up links to the one official archive entry for that date, so
+      // songs and YouTube links only ever need amending in the tracker.
+      var TRACKER_BASE = "https://tracker.brownsborobaptistchurch.org/";
+      function isOrderOfService(ev) {
+        return /order of service/i.test((ev && ev.title) || "");
+      }
+      function trackerUrlForDate(iso) {
+        return TRACKER_BASE + "?date=" + iso;
+      }
+      // The sheet's Details cell for Order of Service rows is just a pointer
+      // ("Full order of service & song videos: https://tracker.../").
+      // Strip the bare URL — the pop-up replaces it with the date link below.
+      function cleanOrderDetails(details) {
+        return String(details || "")
+          .replace(/https?:\/\/tracker\.brownsborobaptistchurch\.org\/?\S*/gi, "")
+          .replace(/full order of service\s*&\s*song videos\s*:?\s*/i, "")
+          .replace(/\s{2,}/g, " ")
+          .trim();
+      }
+      // Render details text with any web address turned into a real link.
+      // Tracker addresses are upgraded to the date-specific archive link.
+      function renderDetailsWithLinks(el, text, iso) {
+        el.textContent = "";
+        var urlRe = /https?:\/\/[^\s<]+/g;
+        var last = 0, m;
+        while ((m = urlRe.exec(text)) !== null) {
+          if (m.index > last) el.appendChild(document.createTextNode(text.slice(last, m.index)));
+          var raw = m[0].replace(/[.,;:]$/, "");
+          var a = document.createElement("a");
+          a.href = /tracker\.brownsborobaptistchurch\.org/i.test(raw) ? trackerUrlForDate(iso) : raw;
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+          a.textContent = raw;
+          el.appendChild(a);
+          last = m.index + raw.length;
+        }
+        if (last < text.length) el.appendChild(document.createTextNode(text.slice(last)));
       }
 
       function openEventDetail(ev, iso, trigger) {
@@ -1403,12 +1465,27 @@
           modalTime.textContent = "";
           modalTimeRow.hidden = true;
         }
-        if (ev.details) {
-          modalDetails.textContent = ev.details;
+        var orderService = isOrderOfService(ev);
+        var detailsText = orderService ? cleanOrderDetails(ev.details) : (ev.details || "");
+        if (detailsText) {
+          renderDetailsWithLinks(modalDetails, detailsText, iso);
           modalDetailsRow.hidden = false;
         } else {
           modalDetails.textContent = "";
           modalDetailsRow.hidden = true;
+        }
+        if (modalArchive && modalArchiveLink) {
+          if (orderService) {
+            modalArchiveLink.href = trackerUrlForDate(iso);
+            if (modalArchiveLinkText) {
+              modalArchiveLinkText.textContent = "View the full order of service — " + fullDateLabel(iso);
+            }
+            modalArchiveLink.setAttribute("aria-label", "View the full order of service for " + fullDateLabel(iso) + " in the Order of Service Tracker, with songs and YouTube videos");
+            modalArchive.hidden = false;
+          } else {
+            modalArchive.hidden = true;
+            modalArchiveLink.removeAttribute("href");
+          }
         }
         modalOverlay.hidden = false;
         document.body.style.overflow = "hidden";
@@ -1533,10 +1610,24 @@
             timeSpan.textContent = item.ev.time;
             body.appendChild(timeSpan);
           }
-          if (item.ev.details) {
+          if (isOrderOfService(item.ev)) {
+            // Do not list the order (or a bare tracker URL) in the calendar —
+            // the pop-up for this entry links to the archive for this date.
+            var archiveNote = document.createElement("div");
+            archiveNote.className = "cal-list-archive-note";
+            archiveNote.textContent = "Full order & song videos in the archive — tap for the link";
+            body.appendChild(archiveNote);
+            var extra = cleanOrderDetails(item.ev.details);
+            if (extra) {
+              var detOrder = document.createElement("div");
+              detOrder.className = "cal-list-details";
+              detOrder.textContent = extra;
+              body.appendChild(detOrder);
+            }
+          } else if (item.ev.details) {
             var det = document.createElement("div");
             det.className = "cal-list-details";
-            det.textContent = item.ev.details;
+            det.textContent = item.ev.details.replace(/https?:\/\/tracker\.brownsborobaptistchurch\.org\/?\S*/gi, "Order of Service Tracker");
             body.appendChild(det);
           }
           btn.appendChild(dateEl);
