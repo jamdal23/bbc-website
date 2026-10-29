@@ -1433,6 +1433,20 @@
           .replace(/\s{2,}/g, " ")
           .trim();
       }
+      // The gold archive button is not limited to entries titled
+      // "Order of Service": any event whose details carry the tracker
+      // address (e.g. a 5th Sunday Singing with an archive link) gets the
+      // same treatment, pointing at that event's own date.
+      function hasTrackerLink(ev) {
+        return /tracker\.brownsborobaptistchurch\.org/i.test((ev && ev.details) || "");
+      }
+      // Same cleanup as the Order of Service pointer, plus dropping a
+      // separator ("·") left dangling where the pointer phrase was cut.
+      function cleanLinkedDetails(details) {
+        return cleanOrderDetails(details)
+          .replace(/\s*[·•|]\s*$/, "")
+          .trim();
+      }
       // Render details text with any web address turned into a real link.
       // Tracker addresses are upgraded to the date-specific archive link.
       function renderDetailsWithLinks(el, text, iso) {
@@ -1466,7 +1480,10 @@
           modalTimeRow.hidden = true;
         }
         var orderService = isOrderOfService(ev);
-        var detailsText = orderService ? cleanOrderDetails(ev.details) : (ev.details || "");
+        var archiveLinked = orderService || hasTrackerLink(ev);
+        var detailsText = orderService ? cleanOrderDetails(ev.details)
+          : archiveLinked ? cleanLinkedDetails(ev.details)
+          : (ev.details || "");
         if (detailsText) {
           renderDetailsWithLinks(modalDetails, detailsText, iso);
           modalDetailsRow.hidden = false;
@@ -1475,7 +1492,7 @@
           modalDetailsRow.hidden = true;
         }
         if (modalArchive && modalArchiveLink) {
-          if (orderService) {
+          if (archiveLinked) {
             modalArchiveLink.href = trackerUrlForDate(iso);
             if (modalArchiveLinkText) {
               modalArchiveLinkText.textContent = "View the full order of service — " + fullDateLabel(iso);
