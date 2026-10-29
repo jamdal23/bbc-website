@@ -278,6 +278,70 @@
     }
     .sermon-archive { text-align: center; margin: 1.5rem 0 0; }
     .sermon-caption { text-align: center; margin: 1.25rem 0 0; font-family: "Libre Baskerville", Georgia, serif; font-size: 1.1rem; }
+    .cal-wrap { padding-bottom: clamp(5rem, 10vw, 8rem); }
+    .cal-head {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      margin-bottom: .6rem;
+    }
+    .cal-head h2 { margin: 0; text-align: center; flex: 1 1 auto; }
+    .cal-nav-btn {
+      flex: 0 0 auto; display: inline-flex; align-items: center; gap: .45rem;
+      min-height: 44px; padding: .55rem .95rem; border: 1px solid var(--line);
+      background: var(--surface); color: var(--ink); font: 600 .92rem "Source Sans 3", sans-serif;
+      cursor: pointer; transition: background .18s ease, color .18s ease;
+    }
+    .cal-nav-btn:hover { background: var(--ink); color: var(--surface); }
+    .cal-nav-btn svg { width: 16px; height: 16px; }
+    .cal-service-times {
+      text-align: center; color: var(--ink-soft); font-weight: 600; font-size: .98rem;
+      margin: 0 0 1.6rem;
+    }
+    .cal-service-times strong { color: var(--ink); }
+    .cal-grid {
+      display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 1px;
+      background: var(--line); border: 1px solid var(--line);
+    }
+    .cal-dow {
+      background: var(--band); color: var(--ink); text-align: center;
+      padding: .55rem .25rem; font: 700 .78rem "Source Sans 3", sans-serif;
+      letter-spacing: .1em; text-transform: uppercase;
+    }
+    .cal-day { background: var(--surface); min-height: 118px; padding: .45rem .5rem .55rem; overflow: hidden; }
+    .cal-day.is-other-month { background: var(--paper); }
+    .cal-day.is-other-month .cal-date-num { color: var(--ink-soft); opacity: .65; }
+    .cal-date-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 1.7rem; height: 1.7rem; font-weight: 700; font-size: .92rem; margin-bottom: .3rem;
+    }
+    .cal-day.is-today .cal-date-num {
+      background: var(--gold); color: #FFFFFF; border-radius: 50%;
+    }
+    .cal-event {
+      background: var(--band); border-radius: 4px; padding: .28rem .4rem; margin-bottom: .3rem;
+      font-size: .74rem; line-height: 1.3; overflow-wrap: break-word;
+    }
+    .cal-event-title { font-weight: 700; display: block; }
+    .cal-event-time { color: var(--ink-soft); font-weight: 600; }
+    .cal-glance { margin-top: clamp(2.5rem, 6vw, 4rem); }
+    .cal-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+    .cal-list-item {
+      display: grid; grid-template-columns: 150px 1fr; gap: .4rem 1.5rem;
+      padding: 1.05rem .2rem; border-bottom: 1px solid var(--divider);
+    }
+    .cal-list-date { font: 700 .95rem/1.45 "Libre Baskerville", Georgia, serif; color: var(--ink); }
+    .cal-list-title { font-weight: 700; font-size: 1.05rem; }
+    .cal-list-time { color: var(--gold); font-weight: 700; margin-left: .5rem; white-space: nowrap; }
+    .cal-list-details { color: var(--ink-soft); margin-top: .15rem; }
+    .cal-empty { color: var(--ink-soft); padding: 1.4rem .2rem; border-bottom: 1px solid var(--divider); margin: 0; }
+    @media (max-width: 640px) {
+      .cal-day { min-height: 74px; padding: .3rem .3rem .4rem; }
+      .cal-date-num { min-width: 1.35rem; height: 1.35rem; font-size: .8rem; margin-bottom: .2rem; }
+      .cal-event { font-size: .62rem; padding: .2rem .28rem; }
+      .cal-dow { font-size: .64rem; letter-spacing: .04em; padding: .45rem .1rem; }
+      .cal-list-item { grid-template-columns: 1fr; gap: .15rem; }
+      .cal-nav-btn { padding: .55rem .65rem; }
+      .cal-nav-btn .cal-nav-label { display: none; }
+    }
     @media (max-width: 1060px) {
       .header-inner { justify-content: flex-end; min-height: 68px; }
       .menu-button { display: inline-flex; }
@@ -324,6 +388,7 @@
           <li><button class="nav-link" data-route="visit">Plan Your Visit</button></li>
           <li><button class="nav-link" data-route="pastor">A Message From the Pastor</button></li>
           <li><button class="nav-link" data-route="involved">Get Involved</button></li>
+          <li><button class="nav-link" data-route="calendar">Calendar</button></li>
           <li><button class="nav-link" data-route="faith">Statement of Faith</button></li>
           <li><button class="nav-link" data-route="giving">Online Giving</button></li>
           <li><button class="nav-link" data-route="livestream">Livestream</button></li>
@@ -809,6 +874,36 @@
         </div>
       </div>
     </section>
+
+    <section class="page" id="page-calendar" data-page="calendar">
+      <div class="page-hero shell">
+        <div class="label">What's coming up</div>
+        <h1>Calendar</h1>
+        <p class="lead">Church events and gatherings at Brownsboro Baptist Church, month by month.</p>
+      </div>
+      <div class="shell cal-wrap">
+        <div class="cal-head">
+          <button class="cal-nav-btn" id="cal-prev" type="button" aria-label="Previous month">
+            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>
+            <span class="cal-nav-label">Previous</span>
+          </button>
+          <h2 id="cal-month-title">Calendar</h2>
+          <button class="cal-nav-btn" id="cal-next" type="button" aria-label="Next month">
+            <span class="cal-nav-label">Next</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+          </button>
+        </div>
+        <p class="cal-service-times"><strong>Sundays</strong> — Sunday School 9:30 AM · Morning Worship 10:30 AM&nbsp;&nbsp;|&nbsp;&nbsp;<strong>Wednesdays</strong> — Meal 5:30 PM · Bible Study/Prayer 6:30 PM</p>
+        <div class="cal-grid" id="cal-grid" role="grid" aria-label="Month calendar"></div>
+        <div class="cal-glance">
+          <div class="section-heading">
+            <div class="section-label">At a glance</div>
+            <h2 id="cal-glance-title">This month's events</h2>
+          </div>
+          <div id="cal-list"></div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">
@@ -834,6 +929,7 @@
           <button class="footer-link" data-route="visit">Plan Your Visit</button>
           <button class="footer-link" data-route="pastor">A Message From the Pastor</button>
           <button class="footer-link" data-route="involved">Get Involved</button>
+          <button class="footer-link" data-route="calendar">Calendar</button>
           <button class="footer-link" data-route="faith">Statement of Faith</button>
           <button class="footer-link" data-route="giving">Online Giving</button>
           <button class="footer-link" data-route="livestream">Livestream</button>
@@ -846,9 +942,10 @@
 
   <script>
     (function () {
-      var validRoutes = ["home", "visit", "pastor", "involved", "faith", "giving", "livestream", "services"];
+      var validRoutes = ["home", "visit", "pastor", "involved", "calendar", "faith", "giving", "livestream", "services"];
       var labels = {
         home: "Home", visit: "Plan Your Visit", pastor: "A Message From the Pastor", involved: "Get Involved",
+        calendar: "Calendar",
         faith: "Statement of Faith", giving: "Online Giving", livestream: "Livestream", services: "Previous Services"
       };
       var menuButton = document.querySelector(".menu-button");
@@ -1150,6 +1247,204 @@
           bar.hidden = false;
         })
         .catch(function () { /* No bar: the page stays exactly as it is. */ });
+    }());
+  </script>
+  <script>
+    // Church calendar: events are read live at page load from the "Calendar" tab of
+    // the same Google Sheet that feeds the announcement bar (gviz JSON feed).
+    // Columns: A Date (YYYY-MM-DD), B Title, C Time (optional), D Details (optional).
+    // Any feed failure still renders the month grid, with an empty list note.
+    (function () {
+      var gridEl = document.getElementById("cal-grid");
+      if (!gridEl) return;
+      var titleEl = document.getElementById("cal-month-title");
+      var glanceTitleEl = document.getElementById("cal-glance-title");
+      var listEl = document.getElementById("cal-list");
+      var prevBtn = document.getElementById("cal-prev");
+      var nextBtn = document.getElementById("cal-next");
+      var FEED_URL = "https://docs.google.com/spreadsheets/d/1Ghw5ngMaZlQ3Pfw4snWXDHRtINBQT3YNQHNkCdqKS6k/gviz/tq?tqx=out:json&sheet=Calendar";
+      var MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      var DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      var DOW_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+      function pad(n) { return (n < 10 ? "0" : "") + n; }
+      function isoOf(y, m, d) { return y + "-" + pad(m + 1) + "-" + pad(d); }
+
+      function toISODate(value) {
+        if (value === null || value === undefined) return "";
+        var s = String(value).trim();
+        if (!s) return "";
+        var m = s.match(/^Date\((\d+),(\d+),(\d+)/);
+        if (m) return m[1] + "-" + pad(parseInt(m[2], 10) + 1) + "-" + pad(parseInt(m[3], 10));
+        m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+        if (m) return m[1] + "-" + pad(parseInt(m[2], 10)) + "-" + pad(parseInt(m[3], 10));
+        return "";
+      }
+
+      function cellDate(row, idx) {
+        if (!row || !row.c || !row.c[idx]) return "";
+        var c = row.c[idx];
+        var iso = toISODate(c.v);
+        if (iso) return iso;
+        if (c.f) {
+          var m = String(c.f).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+          if (m) return m[3] + "-" + pad(parseInt(m[1], 10)) + "-" + pad(parseInt(m[2], 10));
+        }
+        return "";
+      }
+
+      function cellText(row, idx) {
+        if (!row || !row.c || !row.c[idx]) return "";
+        var c = row.c[idx];
+        // Time-of-day cells arrive as Date(1899,...) values; prefer the formatted text.
+        if (typeof c.v === "string" && /^Date\(/.test(c.v) && c.f) return String(c.f);
+        if (c.v !== null && c.v !== undefined) return String(c.v);
+        return c.f ? String(c.f) : "";
+      }
+
+      var eventsByDate = {}; // "YYYY-MM-DD" -> [{title, time, details}]
+      var now = new Date();
+      var todayISO = isoOf(now.getFullYear(), now.getMonth(), now.getDate());
+      var viewYear = now.getFullYear();
+      var viewMonth = now.getMonth(); // 0-based
+
+      function render() {
+        var monthLabel = MONTH_NAMES[viewMonth] + " " + viewYear;
+        titleEl.textContent = monthLabel;
+        glanceTitleEl.textContent = monthLabel + " events";
+
+        // Grid: weekday header row, then day cells starting on Sunday.
+        gridEl.innerHTML = "";
+        DOW_SHORT.forEach(function (d) {
+          var dow = document.createElement("div");
+          dow.className = "cal-dow";
+          dow.textContent = d;
+          gridEl.appendChild(dow);
+        });
+        var first = new Date(viewYear, viewMonth, 1);
+        var startOffset = first.getDay(); // 0 = Sunday
+        var startDate = new Date(viewYear, viewMonth, 1 - startOffset);
+        for (var i = 0; i < 42; i++) {
+          var d = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + i);
+          var iso = isoOf(d.getFullYear(), d.getMonth(), d.getDate());
+          var cell = document.createElement("div");
+          cell.className = "cal-day";
+          if (d.getMonth() !== viewMonth) cell.classList.add("is-other-month");
+          if (iso === todayISO) cell.classList.add("is-today");
+          var num = document.createElement("span");
+          num.className = "cal-date-num";
+          num.textContent = d.getDate();
+          cell.appendChild(num);
+          (eventsByDate[iso] || []).forEach(function (ev) {
+            var pill = document.createElement("div");
+            pill.className = "cal-event";
+            var t = document.createElement("span");
+            t.className = "cal-event-title";
+            t.textContent = ev.title;
+            pill.appendChild(t);
+            if (ev.time) {
+              var tm = document.createElement("span");
+              tm.className = "cal-event-time";
+              tm.textContent = ev.time;
+              pill.appendChild(tm);
+            }
+            cell.appendChild(pill);
+          });
+          gridEl.appendChild(cell);
+        }
+
+        // At-a-glance list: this month's events in date order.
+        listEl.innerHTML = "";
+        var monthEvents = [];
+        Object.keys(eventsByDate).forEach(function (iso) {
+          var parts = iso.split("-");
+          if (parseInt(parts[0], 10) === viewYear && parseInt(parts[1], 10) === viewMonth + 1) {
+            eventsByDate[iso].forEach(function (ev) {
+              monthEvents.push({ iso: iso, day: parseInt(parts[2], 10), ev: ev });
+            });
+          }
+        });
+        monthEvents.sort(function (a, b) { return a.day - b.day; });
+        if (!monthEvents.length) {
+          var empty = document.createElement("p");
+          empty.className = "cal-empty";
+          empty.textContent = "No events listed for this month.";
+          listEl.appendChild(empty);
+          return;
+        }
+        var ul = document.createElement("ul");
+        ul.className = "cal-list";
+        monthEvents.forEach(function (item) {
+          var dateObj = new Date(viewYear, viewMonth, item.day);
+          var li = document.createElement("li");
+          li.className = "cal-list-item";
+          var dateEl = document.createElement("div");
+          dateEl.className = "cal-list-date";
+          dateEl.textContent = DAY_NAMES[dateObj.getDay()] + ", " + MONTH_NAMES[viewMonth] + " " + item.day;
+          var body = document.createElement("div");
+          var titleSpan = document.createElement("span");
+          titleSpan.className = "cal-list-title";
+          titleSpan.textContent = item.ev.title;
+          body.appendChild(titleSpan);
+          if (item.ev.time) {
+            var timeSpan = document.createElement("span");
+            timeSpan.className = "cal-list-time";
+            timeSpan.textContent = item.ev.time;
+            body.appendChild(timeSpan);
+          }
+          if (item.ev.details) {
+            var det = document.createElement("div");
+            det.className = "cal-list-details";
+            det.textContent = item.ev.details;
+            body.appendChild(det);
+          }
+          li.appendChild(dateEl);
+          li.appendChild(body);
+          ul.appendChild(li);
+        });
+        listEl.appendChild(ul);
+      }
+
+      prevBtn.addEventListener("click", function () {
+        viewMonth -= 1;
+        if (viewMonth < 0) { viewMonth = 11; viewYear -= 1; }
+        render();
+      });
+      nextBtn.addEventListener("click", function () {
+        viewMonth += 1;
+        if (viewMonth > 11) { viewMonth = 0; viewYear += 1; }
+        render();
+      });
+
+      render(); // grid shows even before (or without) the feed
+
+      if (!window.fetch) return;
+      fetch(FEED_URL)
+        .then(function (response) {
+          if (!response.ok) throw new Error("Calendar feed unavailable");
+          return response.text();
+        })
+        .then(function (text) {
+          var start = text.indexOf("{");
+          var end = text.lastIndexOf("}");
+          if (start < 0 || end <= start) return;
+          var data = JSON.parse(text.slice(start, end + 1));
+          if (!data || !data.table || !data.table.rows) return;
+          data.table.rows.forEach(function (row) {
+            var iso = cellDate(row, 0);
+            var title = cellText(row, 1).trim();
+            if (!iso || !title) return; // skips the header row and blanks
+            if (/^title$/i.test(title) && !cellText(row, 2).trim()) return;
+            if (!eventsByDate[iso]) eventsByDate[iso] = [];
+            eventsByDate[iso].push({
+              title: title,
+              time: cellText(row, 2).trim(),
+              details: cellText(row, 3).trim()
+            });
+          });
+          render();
+        })
+        .catch(function () { /* Grid already rendered; list shows the empty note. */ });
     }());
   </script>
 </body>
