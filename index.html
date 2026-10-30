@@ -1642,12 +1642,19 @@
         }
 
         // At-a-glance list: this month's events in date order.
+        // Past weekly Order of Service entries are service records, not
+        // upcoming events, so an Order of Service whose date has already
+        // passed (before today) is left out of this list. An Order of
+        // Service for today or an upcoming Sunday still appears here.
+        // Either way, every Order of Service entry still appears in the
+        // grid above, where its pop-up links to the archive for that date.
         listEl.innerHTML = "";
         var monthEvents = [];
         Object.keys(eventsByDate).forEach(function (iso) {
           var parts = iso.split("-");
           if (parseInt(parts[0], 10) === viewYear && parseInt(parts[1], 10) === viewMonth + 1) {
             eventsByDate[iso].forEach(function (ev) {
+              if (isOrderOfService(ev) && iso < todayISO) return;
               monthEvents.push({ iso: iso, day: parseInt(parts[2], 10), ev: ev });
             });
           }
